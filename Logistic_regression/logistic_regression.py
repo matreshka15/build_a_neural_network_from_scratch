@@ -4,7 +4,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-
 ''' 
 In order to implement logistic regression, we need to initialize parameters w and b, note that when using logistic regression, 
 we have only one computing unit in the neural network. Therefore parameters can be initialized to all zeros. 
@@ -24,11 +23,6 @@ def sigmoid(z):
     value = 1/(1+np.exp(-z))
     return value
 
-#plot Sigmoid function 
-plt.figure(figsize=(4,3))
-plt.title('Sigmoid function\'s shape')
-z = np.linspace(-10,10)
-plt.plot(z,sigmoid(z))
 
 #note the dimensions of vectors:
 # w - (1,x_dims)
@@ -64,7 +58,7 @@ def train_logistic_regression(X,y,number_of_iteration = 1000,learning_rate = 0.0
     m = y.shape[1]  #  m = total number of trainning examples
     X = X.reshape(-1,m)
     x_dim = X.shape[0]
-    
+    # Initialize parameters
     params = logistic_parameter_initialize(x_dim)
     w = params['w']
     b = params['b']
@@ -95,6 +89,18 @@ def train_logistic_regression(X,y,number_of_iteration = 1000,learning_rate = 0.0
     return w,b
 
 
-
+#After training the unit, we can now use it to make predictions.
+def logistic_predict(w,b,X,y=0,evaluate = True):
+    if(not w.shape[1] == X.shape[0]):
+        X = X.T
+    yhat = np.dot(w,X)+b
+    yhat = yhat>0.5
+    #Codes below is used to evaluate the performance of logistic regression on given dataset X with label y
+    #You can just ignore this part
+    if(evaluate == True):
+        y=y.reshape(1,-1)
+        train_accuracy = np.sum(yhat==y)/y.shape[1]
+        print('accuracy = %.2f\n'%train_accuracy)
+    return yhat
 
 
