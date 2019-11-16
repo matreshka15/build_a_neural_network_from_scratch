@@ -1,6 +1,8 @@
 build_a_neural_network_from_scratch
 ================
 Note:This project is in its initial state, which means all the libs and jupyter notebooks uploaded is usable, but it doesn't cover all the areas of deep learning. We're still trying to make it a better and more thorough lib.  
+This is a project of a college student, so if you like the repo, please star it!   
+Your support will inspire me to make this project better!
 
 Anyway, this is both a deep learning tutorial and a deep learning python lib.  
 -------
