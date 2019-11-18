@@ -12,7 +12,7 @@ As the title indicated, you can use the repo as a tutorial of how to build a neu
 Each directory includes corresponding files as its title. For instance, in the directory 'logistic_regression', what you will see is as below:  
 * a jupyter notebook file, which shows the whole process of implementing a computing unit(that is, a logistic regression function)
 * a *.py file, which is the python library of functions, which can help you build your own logistic regression faster
-
+* *.pdf files, which is my personal notes of deep learning. Is may or may not help you understand the code(if you try to build a NN yourself)
 ## Other libraries required
 These are some other libraries required to run neural network codes on your terminal.  
 You can use pip to install them. For example,you can input 'sudo pip3 install numpy' on your terminal to install numpy lib.  
