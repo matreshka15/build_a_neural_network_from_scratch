@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 import numpy as np
-import matplotlib.pyplot as plt
 
 def nn_parameter_initialize(nn_structure):
     # x_dim indicates the dimensions of input feature,a bias unit b is defaultly set.

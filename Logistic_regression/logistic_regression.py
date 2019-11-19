@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
-
 import numpy as np
-import matplotlib.pyplot as plt
+#This is a implementation and library for binary classification, a.k.a logistic regression
 
 ''' 
 In order to implement logistic regression, we need to initialize parameters w and b, note that when using logistic regression, 
@@ -18,11 +17,11 @@ def logistic_parameter_initialize(x_dim):
     parameter = {'w':w,'b':b}
     return parameter
 
+
 #implementation of sigmoid function
 def sigmoid(z):
     value = 1/(1+np.exp(-z))
     return value
-
 
 #note the dimensions of vectors:
 # w - (1,x_dims)
@@ -56,7 +55,8 @@ def train_logistic_regression(X,y,number_of_iteration = 1000,learning_rate = 0.0
     # Dimension convert: make sure all vectors are in proper shapes.
     y = y.reshape(1,-1)   # y is a row vector
     m = y.shape[1]  #  m = total number of trainning examples
-    X = X.reshape(-1,m)
+    if(X.shape[1] != m):
+        X=X.T       #=====> Note that array.reshape and array.T are different!
     x_dim = X.shape[0]
     # Initialize parameters
     params = logistic_parameter_initialize(x_dim)
@@ -102,5 +102,6 @@ def logistic_predict(w,b,X,y=0,evaluate = True):
         train_accuracy = np.sum(yhat==y)/y.shape[1]
         print('accuracy = %.2f\n'%train_accuracy)
     return yhat
+
 
 
