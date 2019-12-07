@@ -1,15 +1,34 @@
 #!/usr/bin/env python
 # coding: utf-8
-import numpy as np
 
+#Note: This is a visualized version of neural networks with multiple layers lib.
+import numpy as np
+import matplotlib.pyplot as plt
+
+''' 
+In order to implement neural networks, which turns out that we are using multiple computing units(e.g. sigmoid or relu), 
+it is required to initialize the parameter w randomly, whileb can be set to all zeros.
+'''
+
+# nn_structure is a tuple, indicating the number of layers and units in each layer.
+# for example, nn_structure = [4,4,3,1] indicates a neural network with 1 input layer, 2 hidden layers and one output unit.
 def nn_parameter_initialize(nn_structure):
     # x_dim indicates the dimensions of input feature,a bias unit b is defaultly set.
     parameter = {}
-    for i in range(1,len(nn_structure)):
-        parameter['w'+str(i)] = np.random.randn(nn_structure[i],nn_structure[i-1])*0.01 
+    # Note: for ReLu unit, we use He initialization to faster convergence; for sigmoid in the output layer, do Xavier initialization. 
+    for i in range(1,len(nn_structure)-1):
+        parameter['w'+str(i)] = np.random.randn(nn_structure[i],nn_structure[i-1])*np.sqrt(2./nn_structure[i-1])
         parameter['b'+str(i)] = np.zeros((nn_structure[i],1))
+    L = len(nn_structure)-1
+    parameter['w'+str(L)] = np.random.randn(nn_structure[L],nn_structure[L-1])*np.sqrt(1./nn_structure[L-1])
+    parameter['b'+str(L)] = np.zeros((nn_structure[L],1))    
     return parameter
 
+
+# In[388]:
+
+
+#implementation of sigmoid function
 def sigmoid(z):
     value = 1/(1+np.exp(-z))
     return value
@@ -27,6 +46,7 @@ def derivative_of_activation(a,activation='sigmoid'):
         derivative = a>0
         derivative = derivative.astype(np.int32)
     return derivative.reshape(shape)
+
 
 # note the dimensions of vectors:
 # w - (number_of_units_in_current_layer,number_of_units_in_previous_layer)
@@ -83,7 +103,6 @@ def compute_cost(yhat,y):
     cost = -np.sum(y*np.log(yhat)+(1-y)*np.log(1-yhat))/m
     return cost
 
-
 # Back propagation step: compute partial derivatives of each parameter respectively
 def linear_back_prop(w,a_previous,dz_l):
     m = a_previous.shape[1]
@@ -115,7 +134,6 @@ def L_layer_back_prop(X,y,cache_from_forward,testAL = np.zeros(1)):
         linear_cache_l,activation_cache_l = cache_from_forward['layer_'+str(layer)]
         W[layer] = linear_cache_l
         A[layer],Z[layer] = activation_cache_l
-    #print('AL = ',A[L])
     #Initialize the output layer
     if((testAL == np.zeros(1))):
         yhat = A[L]
@@ -131,7 +149,6 @@ def L_layer_back_prop(X,y,cache_from_forward,testAL = np.zeros(1)):
         assert(dW[i].shape == W[i].shape)
     return dW,db
 
-
 def update_parameters(params,learning_rate,dW,dB):
         L = len(params) // 2
         for j in range(1,L+1):
@@ -139,22 +156,33 @@ def update_parameters(params,learning_rate,dW,dB):
             params['b'+str(j)] = params['b'+str(j)] - learning_rate*dB[j]
         return params
 
+def dimension_convert(X,y):
+    # Dimension convert: make sure all vectors are in proper shapes.
+    y = y.reshape(1,-1)# y is a row vector
+    M = y.shape[1]  #  m = total number of trainning examples
+    if(X.shape[1] != M):
+        X=X.T       #=====> Note that array.reshape and array.T are different!
+    return X,y
+
 
 # The overall implementation of training a logistic regression
 # Note: net_structure indicates the shape of hidden layers and output layers. No input layer should be included.
 
-def train_neural_network(X,y,net_structure,number_of_iteration = 1000,learning_rate = 0.03,print_cost = True,plot_cost = True):
+def train_neural_network(X,y,net_structure,number_of_iteration = 1000,learning_rate = 0.03,lambd = 0.7,print_cost = True,plot_cost = True):
     # Dimension convert: make sure all vectors are in proper shapes.
-    y = y.reshape(1,-1)# y is a row vector
-    
-    m = y.shape[1]  #  m = total number of trainning examples
-    if(X.shape[1] != m):
-        X=X.T       #=====> Note that array.reshape and array.T are different!
-    assert(X.shape[1] == m)
+    X,y = dimension_convert(X,y)
     print('*******Dimension Check*******')
     print('Input feature\'s dimension: ',X.shape)
     print('Output\'s dimension: ',y.shape)
     print('*****************************')
+    
+    #Normalize input feature X
+    miu = np.sum(X)/(X.shape[0]*X.shape[1])
+    X = X - miu
+    sigma2 = np.sum(X**2)/(X.shape[0]*X.shape[1])
+    sigma = np.sqrt(sigma2)
+    X = X / sigma
+    
     x_dim = X.shape[0]
     L = len(net_structure) # number of layers
     # Initialize parameters
@@ -178,10 +206,7 @@ def train_neural_network(X,y,net_structure,number_of_iteration = 1000,learning_r
         yhat,cache = L_layer_forward_prop(X,params)
         assert(yhat.shape == y.shape)
         cost = compute_cost(yhat,y)
-        #print('yhat=',yhat)
         dW,dB = L_layer_back_prop(X,y,cache)
-        #if(i%10 == 0):
-            #print('Iteration {},dW[2] = {}'.format(i,dW[2]))
             
         #Gradient decent
         params = update_parameters(params,learning_rate,dW,dB)
@@ -197,26 +222,29 @@ def train_neural_network(X,y,net_structure,number_of_iteration = 1000,learning_r
         i_curve = np.reshape(i_curve,(1,-1))
         cost_curve = np.reshape(cost_curve,(1,-1))
         plt.scatter(i_curve,cost_curve)
-    return params
+    return params,miu,sigma
 
 
-#After training the unit, we can now use it to make predictions.
-def nn_predict(parameters,X,y=0,evaluate = True):
+
+#After training the neural network, we can now use it to make predictions.
+def nn_predict(parameters,miu,sigma,X,y=0,evaluate = True):
     L = len(parameters) // 2
     w1 = parameters['w1'] 
     num_of_features = w1.shape[1]
-#    m = y.shape[1]  #  m = total number of trainning examples
     if(X.shape[0] != num_of_features):
         X=X.T       #=====> Note that array.reshape and array.T are different!
+    X = X - miu
+    X = X / sigma
     yhat,cache = L_layer_forward_prop(X,parameters)
     yhat = yhat>0.5
-    #Codes below is used to evaluate the performance of logistic regression on given dataset X with label y
+    #Codes below is used to evaluate the performance 
     #You can just ignore this part
     if(evaluate == True):
         y=y.reshape(1,-1)
         train_accuracy = np.sum(yhat==y)/y.shape[1]
         print('accuracy = %.2f\n'%train_accuracy)
     return yhat
+
 
 
 
