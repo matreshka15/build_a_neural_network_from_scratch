@@ -1,5 +1,36 @@
 build_a_neural_network_from_scratch
 ================
+注:该项目处于初始阶段，这意味着所有写好的库文件以及jupyter 笔记本上的函数都是可用的，但它们仅涉及神经网络部分。
+欢迎将您自己的代码、升级、想法、笔记等并入此Repo!
+总之，这既是一个深度学习教程，也是一个深度学习python库。
+-------
+
+## 如何使用?
+正如标题所示，您可以使用该repo作为如何构建神经网络的教程，以及一个方便的python库来加快实现机器学习程序。   
+每个目录都包含相应的文件，如其标题所示。例如，在'logistic_regression'目录中，您将看到如下内容:
+* jupyter notebook文件，可以直接用来理解神经网络原理以及学习如何从零实现一个神经网络。
+* .py文件，它是python函数库，可以帮助您更快地构建自己的逻辑回归。
+* *.pdf文件，这是我个人的深度学习笔记。它可以帮助您更好地理解代码。
+
+## 其他需要的库
+这些是在终端上运行神经网络代码所需的其他一些库。 
+如果您只需要*.py文件，即lib文件，那么您只需要numpy。 
+您可以使用pip来安装它们。例如，您可以在终端上输入“sudo pip3 install numpy”来安装numpy库。
+本报告所涉及的所有libraries已列于下表:
+* numpy
+-如前所述，这是几乎所有机器学习python程序的必备。它可以实现向量化，从而增强稳健性并加速代码运行。
+* matplotlib
+-这是一个库，可以让你画条\散点图等。如果你熟悉malab，你会很乐意使用它的。但是如果没有也没关系，因为几乎所有的代码都已经为你完成了。
+* sklearn
+这个库有一些集成的数据集，可以节省我们收集数据的时间。有时我们会用这个库来分割数据集，等等。
+
+
+
+-------
+
+
+build_a_neural_network_from_scratch
+================
 Note:This project is in its initial state, which means all the libs and jupyter notebooks uploaded is usable, but it doesn't cover all the areas of deep learning. We're still trying to make it a better and more thorough lib.  
 
 You'll be welcomed to pull your own codes\upgrades\thoughts\notes, etc. to this repo!
